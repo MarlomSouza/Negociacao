@@ -1,10 +1,11 @@
-class NegociacoesView {
+class NegociacoesView extends View {
 
     constructor(elemento) {
-        this._elemento = elemento;
+        super(elemento);
     }
 
-    _template(model) {
+
+    template(model) {
         return `<table class="table table-hover table-bordered">
         <thead>
             <tr>
@@ -30,14 +31,10 @@ class NegociacoesView {
         <tfoot>
         <td colspan="3" style="text-align:right">Total</td>
         <td>
-            ${model.negociacoes.reduce((valor, n) =>  valor + n.obterVolume(), 0)} 
+            ${model.negociacoes.reduce((valor, n) => valor + n.obterVolume(), 0)} 
         </td>
         </tfoot>
     </table>`;
-    }
-
-    update(model) {
-        this._elemento.innerHTML = this._template(model);
     }
 }
 
