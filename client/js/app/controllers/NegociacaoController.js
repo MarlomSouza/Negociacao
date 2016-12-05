@@ -23,6 +23,26 @@ class NegociacaoController {
         this._limpaFormulario();
     }
 
+    importaNegociacao() {
+        let xhr = new XMLHttpRequest();
+
+        xhr.open('Get', 'negociacoes/semana');
+
+
+        xhr.onreadystatechange = (status) => {
+            if (xhr.readyState == 4) {
+                if (xhr.status == 200) {
+                    console.log(xhr.responseText);
+                }
+                else {
+                    console.log('ERROR');
+                }
+            }
+        };
+        xhr.send();
+    };
+
+
     apaga() {
         this._listaNegociacoes.esvazia(this._listaNegociacoes);
         this._mensagem.texto = "Itens removido";
