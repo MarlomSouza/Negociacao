@@ -23,31 +23,39 @@ class NegociacaoController {
         this._limpaFormulario();
     }
 
+    // Outro meio 
+    // importaNegociacao() {
+    //     let negociacaoService = new NegociacaoService();
+
+    //     this._importacao(negociacaoService.obterListaNegociacaoSemana());
+    //     this._importacao(negociacaoService.obterListaNegociacaoSemanaAnterior());
+    //     this._importacao(negociacaoService.obterListaNegociacaoSemanaRetrasada());
+
+    // };
+
+    // _importacao(listaNegociacao) {
+    //     listaNegociacao.then(negocio => {
+    //         negocio.forEach(n => this._listaNegociacoes.adiciona(n));
+    //         this._mensagem.texto = "Importado com sucesso";
+    //     }
+    //     ).catch(erro => this._mensagem.texto = erro);
+    // }
+
     importaNegociacao() {
         let negociacaoService = new NegociacaoService();
-
-        negociacaoService.obterListaNegociacaoSemana((erro, negociacao) => {
-          this._importacao(erro, negociacao);
-        });
-
-        negociacaoService.obterListaNegociacaoSemanaAnterior((erro, negociacao) => {
-             this._importacao(erro, negociacao);
-        });
-
-        negociacaoService.obterListaNegociacaoSemanaRetrasada((erro, negociacao) => {
-         this._importacao(erro, negociacao);
-        });
-
-    };
-
-    _importacao(erro, negociacao) {
-        if (erro) {
-            console.log('erro', erro);
-            return;
+        Promise.all([
+            negociacaoService.obterListaNegociacaoSemana(),
+            negociacaoService.obterListaNegociacaoSemanaAnterior(),
+            negociacaoService.obterListaNegociacaoSemanaRetrasada()
+        ]).then(negociacoes => {
+            negociacoes
+                .reduce((arrayAchatado, array) => arrayAchatado.concat(array), [])
+                .forEach(n => this._listaNegociacoes.adiciona(n));
+            this._mensagem.texto = "Importado com sucesso";
         }
-        negociacao.forEach(n => this._listaNegociacoes.adiciona(n));
-        this._mensagem.texto = "Importado com sucesso";
+            ).catch(erro => this._mensagem.texto = erro);
     }
+
 
     apaga() {
         this._listaNegociacoes.esvazia(this._listaNegociacoes);
