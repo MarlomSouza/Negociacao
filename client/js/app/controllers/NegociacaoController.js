@@ -24,24 +24,30 @@ class NegociacaoController {
     }
 
     importaNegociacao() {
-        let xhr = new XMLHttpRequest();
+        let negociacaoService = new NegociacaoService();
 
-        xhr.open('Get', 'negociacoes/semana');
+        negociacaoService.obterListaNegociacaoSemana((erro, negociacao) => {
+          this._importacao(erro, negociacao);
+        });
 
+        negociacaoService.obterListaNegociacaoSemanaAnterior((erro, negociacao) => {
+             this._importacao(erro, negociacao);
+        });
 
-        xhr.onreadystatechange = (status) => {
-            if (xhr.readyState == 4) {
-                if (xhr.status == 200) {
-                    console.log(xhr.responseText);
-                }
-                else {
-                    console.log('ERROR');
-                }
-            }
-        };
-        xhr.send();
+        negociacaoService.obterListaNegociacaoSemanaRetrasada((erro, negociacao) => {
+         this._importacao(erro, negociacao);
+        });
+
     };
 
+    _importacao(erro, negociacao) {
+        if (erro) {
+            console.log('erro', erro);
+            return;
+        }
+        negociacao.forEach(n => this._listaNegociacoes.adiciona(n));
+        this._mensagem.texto = "Importado com sucesso";
+    }
 
     apaga() {
         this._listaNegociacoes.esvazia(this._listaNegociacoes);
