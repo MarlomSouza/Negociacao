@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>INDEX DB</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+</head>
+
+<body>
+    <script src="js/app/models/Negociacao.js"></script>
+    <script>
+
+        var request = window.indexedDB.open('aluraframe',4);
+        var connection;        
+
+        request.onupgradeneeded = event =>  {
+            console.log('Cria ou altera uma conexao existente', event);
+
+            let minhaConexao = event.target.result;
+
+            if(minhaConexao.objectStoreNames.contains('negociacoes')){
+                minhaConexao.deleteObjectStore('negociacoes');
+            }
+              // Criando outro objeto chamado "negociacoes" com o autoIncrement setado.    
+            minhaConexao.createObjectStore('negociacoes', { autoIncrement: true});
+        };
+
+        request.onsuccess = event =>  {
+        
+            console.log('conexao obtida com sucesso',event);
+            connection = event.target.result;
+        };
+
+        request.onerror = event =>  {
+            console.log('erro', event);
+        };
+
+        function adiciona(){
+            let negociacao = new Negociacao(new Date(), 1, 200);
+            
+            var transaction = connection.transaction(["negociacoes"], "readwrite");
+
+            //Transações somente deixam você obter um objectStore citado na transação. Então você pode adicionar os dados que precisa.
+            var objectStore = transaction.objectStore("negociacoes");
+
+            //O result de um request  gerado de uma chamada de add() é a chave do valor  que foi adicionado. Então neste caso, ele deve ser igual ao valor do ssn do objeto que foi adicionado.
+            let request = objectStore.add(negociacao);
+
+            request.onsuccess = event => {
+                console.log(event);
+            };
+
+            request.onerror = event => {
+                console.log('deu ruim: ',event);
+            };
+        }
+
+        function adiciona2(){
+            let negociacao = new Negociacao(new Date(), 2, 400);
+            
+            var transaction = connection.transaction(["negociacoes"], "readwrite")
+                              .objectStore("negociacoes")
+                              .add(negociacao);
+
+            request.onsuccess = event => {
+                console.log(event);
+            };
+
+            request.onerror = event => {
+                console.log('deu ruim: ',event);
+            };
+        }
+
+        function listaTodos(){
+            var transaction = connection.transaction(["negociacoes"], "readwrite")
+                              .objectStore("negociacoes")
+
+                              
+        }
+
+
+    </script>
+</body>
+
+</html>
