@@ -33,7 +33,7 @@
         };
 
         request.onerror = event =>  {
-            console.log('erro', event);
+            console.log('erro', event.target.error);
         };
 
         function adiciona(){
@@ -73,12 +73,31 @@
         }
 
         function listaTodos(){
-            var transaction = connection.transaction(["negociacoes"], "readwrite")
-                              .objectStore("negociacoes")
+              let transaction = connection.transaction(['negociacoes'],'readwrite')
+                                .objectStore("negociacoes");
+            
+            let negociacoes = [];
 
-                              
+            let cursor = transaction.openCursor();
+
+            cursor.onsuccess = event => {
+                let atual = event.target.result;
+
+                if(atual){
+                    let dado = atual.value;
+                       negociacoes.push(new Negociacao(dado._data, dado._quantidade, dado._valor));
+                     atual.continue();
+                }
+                else{
+                    console.log(negociacoes);
+                }
+            };
+            
+            cursor.onerror = event => {
+                console.log(event);
+            };
+            
         }
-
 
     </script>
 </body>
